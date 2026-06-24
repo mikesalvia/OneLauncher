@@ -1,0 +1,101 @@
+{
+  "source_repo": "/Users/michael.salvia/repos/mikesalvia/lotro-suite/launcher",
+  "created_at": "2026-06-23",
+  "status": "backlog",
+  "items": [
+    {
+      "id": "promo_sync_parity",
+      "title": "Promo asset sync parity",
+      "status": "pending",
+      "details": "DownloadFilesList + Akamai fallback + .splash-sync-state.json behavior",
+      "source_refs": [
+        "launcher/src-tauri/src/lib.rs:949",
+        "launcher/src-tauri/src/lib.rs:1065",
+        "launcher/src-tauri/src/lib.rs:1230"
+      ]
+    },
+    {
+      "id": "promo_preflight",
+      "title": "Promo preflight diagnostics",
+      "status": "pending",
+      "details": "Emit game-root/raw/logo checks in launch log",
+      "source_refs": [
+        "launcher/src-tauri/src/lib.rs:1279"
+      ]
+    },
+    {
+      "id": "splash_flags",
+      "title": "Splash and raw-download launch controls",
+      "status": "pending",
+      "details": "show_splash_screen toggles -nosplash; skip_raw_download toggles --skiprawdownload",
+      "source_refs": [
+        "launcher/src-tauri/src/lib.rs:1553",
+        "launcher/src-tauri/src/lib.rs:1571",
+        "launcher/profiles.json:17",
+        "launcher/profiles.json:19"
+      ]
+    },
+    {
+      "id": "wine_cwd_ab",
+      "title": "Wine --cwd behavior and A/B switch",
+      "status": "pending",
+      "details": "Bottle-aware C: path conversion and omit_client_cwd debug switch",
+      "source_refs": [
+        "launcher/src-tauri/src/lib.rs:1005",
+        "launcher/src-tauri/src/lib.rs:1576",
+        "launcher/profiles.json:22"
+      ]
+    },
+    {
+      "id": "activity_log_live",
+      "title": "Live activity log cross-window events",
+      "status": "pending",
+      "details": "log window listens to launch-event; includes copy action",
+      "source_refs": [
+        "launcher/logs.html:199",
+        "launcher/logs.html:245",
+        "launcher/logs.html:163",
+        "launcher/src/main.ts:45",
+        "launcher/src/main.ts:180"
+      ]
+    },
+    {
+      "id": "launch_ux_copy",
+      "title": "LOTR launch UX text and quotes",
+      "status": "pending",
+      "details": "Rotating loading messages + optional backend quote emissions",
+      "source_refs": [
+        "launcher/src/main.ts:87",
+        "launcher/src-tauri/src/lib.rs:14",
+        "launcher/src-tauri/src/lib.rs:63"
+      ]
+    },
+    {
+      "id": "runtime_safety",
+      "title": "Runtime safety for blocking work",
+      "status": "pending",
+      "details": "Run blocking promo sync inside spawn_blocking",
+      "source_refs": [
+        "launcher/src-tauri/src/lib.rs:1558"
+      ]
+    }
+  ],
+  "product_decisions": [
+    {
+      "id": "lotro_only_mode",
+      "question": "Should DDO be fully disabled in this fork?",
+      "code_refs": [
+        "src/onelauncher/game_config.py:21",
+        "src/onelauncher/official_clients.py:169"
+      ]
+    },
+    {
+      "id": "split_bundles",
+      "question": "Should we ship separate LOTRO and DDO app bundles from same codebase?",
+      "code_refs": [
+        "src/onelauncher/game_config.py:21",
+        "src/onelauncher/v1x_config_migrator.py:70"
+      ]
+    }
+  ]
+}
