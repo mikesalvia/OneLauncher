@@ -41,7 +41,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from .__about__ import __title__
 from .addons.config import AddonsConfigSection
-from .config_manager import ConfigManager
+from .config_manager import ConfigManager, is_game_type_enabled
 from .game_config import (
     GameConfig,
     GameConfigID,
@@ -459,6 +459,9 @@ class SetupWizard(QtWidgets.QWizard):
         checked: bool = False,
         selected: bool = False,
     ) -> None:
+        if not is_game_type_enabled(game_config.game_type):
+            return
+
         if item := self.get_game_dir_list_item(game_config.game_directory):
             if selected:
                 self.ui.gamesListWidget.setCurrentItem(item)
@@ -487,6 +490,8 @@ class SetupWizard(QtWidgets.QWizard):
             InvalidGameDirError: `game_dir` is not a valid game directory
         """
         game_type = find_game_dir_game_type(game_dir=game_dir)
+        if not is_game_type_enabled(game_type):
+            raise InvalidGameDirError("Game type is disabled")
 
         launcher_config_paths = get_launcher_config_paths(
             search_dir=game_dir, game_type=game_type

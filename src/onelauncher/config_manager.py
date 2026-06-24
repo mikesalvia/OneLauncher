@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 from collections.abc import Callable
 from contextlib import suppress
 from functools import cache, partial
@@ -31,6 +32,34 @@ logger = logging.getLogger(__name__)
 PROGRAM_CONFIG_DIR_DEFAULT: Path = platform_dirs.user_config_path
 PROGRAM_CONFIG_DEFAULT_NAME = f"{__title__.lower()}.toml"
 GAMES_DIR_DEFAULT: Path = platform_dirs.user_data_path / "games"
+
+
+def get_allowed_game_types() -> tuple[GameType, ...]:
+    """
+    Resolve allowed game types from ONELAUNCHER_ALLOWED_GAME_TYPES.
+
+    Examples:
+    - "LOTRO" -> LOTRO only
+    - "LOTRO,DDO" -> both
+    - unset/empty/invalid -> both
+    """
+    raw = os.getenv("ONELAUNCHER_ALLOWED_GAME_TYPES", "").strip()
+    if not raw:
+        return tuple(GameType)
+
+    allowed: list[GameType] = []
+    for token in [part.strip().upper() for part in raw.split(",") if part.strip()]:
+        if token == GameType.LOTRO.value:
+            allowed.append(GameType.LOTRO)
+        elif token == GameType.DDO.value:
+            allowed.append(GameType.DDO)
+
+    # Fall back to all game types if the env var is malformed.
+    return tuple(dict.fromkeys(allowed)) if allowed else tuple(GameType)
+
+
+def is_game_type_enabled(game_type: GameType) -> bool:
+    return game_type in get_allowed_game_types()
 
 
 def _structure_onelauncher_locale(
@@ -395,7 +424,14 @@ class ConfigManager:
         for game_id in self._get_game_config_ids():
             # FileNotFoundError is handled by using known to exist game IDs
             # ConfigFileParseError and WrongConfigVersionError are handled by caller
-            self._read_game_config_file(game_id)
+            game_config = self._read_game_config_file(game_id)
+            if not is_game_type_enabled(game_config.game_type):
+                logger.info(
+                    "Skipping game config %s because %s is disabled by ONELAUNCHER_ALLOWED_GAME_TYPES",
+                    game_id,
+                    game_config.game_type,
+                )
+                continue
             try:
                 # ConfigFileParseError and WrongConfigVersionError are handled by caller
                 self._read_game_accounts_config_file_full(game_id)
